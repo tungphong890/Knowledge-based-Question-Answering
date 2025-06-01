@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KBQA Demo</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .chat { display: flex; flex-direction: column; gap: 15px; }
+    .entry { display: grid; grid-template-columns: 1fr 1fr; }
+    .question { text-align: right; padding-right: 10px; }
+    .answer   { text-align: left;  padding-left: 10px; }
+    form { margin-bottom: 30px; display: flex; align-items: center; gap: 20px; }
+    textarea { width: 60%; height: 60px; }
+    pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Knowledge Base Question Answering</h1>
+
+  <form method="POST">
+    <div>
+      <label>Your question:</label><br>
+      <textarea name="question" required></textarea>
+    </div>
+    <button type="submit">Ask</button>
+  </form>
+
+  <div class="chat">
+    {% for e in history %}
+      <div class="entry">
+        <div class="answer">
+          {% if e.vars[0] == 'error' %}
+            <p style="color:red;"><strong>Error:</strong> {{ e.rows[0].error }}</p>
+            {% if e.rows[0].query %}
+              <pre>{{ e.rows[0].query }}</pre>
+            {% endif %}
+          {% else %}
+            {{ render_html_table(e.vars, e.rows)|safe }}
+          {% endif %}
+        </div>
+        <div class="question">
+          <strong>Q:</strong> {{ e.question }}<br>
+          <em>Query:</em>
+          <pre>{{ e.query }}</pre>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
